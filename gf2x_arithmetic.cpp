@@ -82,7 +82,7 @@ inline v256 gf2x_square(v128 a)
 	out.u64[3] = z2.u64[1];
 	return out;
 }
-// right sift
+// right shift, this is really slow and needs to be faster
 inline v256 shr_v256(v256 in, u32 n)
 {
 	for (int i = 0; i < 3; ++i)
@@ -103,7 +103,7 @@ inline v256 shr_v256(v256 in, u32 n)
 	out.u64 |= a.u64;
 	return out;
 }
-// left shift
+// left shift, this is really slow and needs to be faster
 inline v256 shl_v256(v256 in, u32 n)
 {
 	for (int i = 0; i < 3; ++i)
@@ -126,7 +126,7 @@ inline v256 shl_v256(v256 in, u32 n)
 }
 
 // Calculates a // b (the quotient of a / b)
-// This function should only used once because the modulus is assumed to be constant throughout the program, so speed is not important
+// This function should only be used once because the modulus is assumed to be constant throughout the program, so speed is not important
 inline v128 gf2x_divide(v256 a, v128 b)
 {
 	const u32 a_deg = get_degree_256(a);
@@ -152,11 +152,11 @@ inline v128 gf2x_divide(v256 a, v128 b)
 // P(x) is assumed to be constant and that's why this can optimize it
 inline v128 gf2x_reduce(v256 in, const v128 INV, const v128 P, const u32 p_deg)
 {
-	v256 t = shr_v256(in, p_deg); // Shift right needs to be super fast here
+	v256 t = shr_v256(in, p_deg); // Shift right, needs to be super fast here
 
 	v128 out = {(long long)t.u64[0], (long long)t.u64[1]};
 	t = gf2x_karatsuba(out, INV);
-	t = shr_v256(t, p_deg); // Shift right needs to be super fast here
+	t = shr_v256(t, p_deg); // Shift right, needs to be super fast here
 
 	out.u64[0] = t.u64[0];
 	out.u64[1] = t.u64[1];
