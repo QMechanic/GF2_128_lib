@@ -16,7 +16,7 @@ int main(int argc, char const *argv[])
 	v128 b = {1, 0};
 
 	for (u32 i = 0; i < 100000000; i++) {
-		b = gf2x_reduce(gf2x_karatsuba(b, a), INV, POLY, P_DEG);
+		b = gf2x_reduce(gf2x_mul(b, a), INV, POLY, P_DEG);
 	}
 	print_v128(b); // {00000000000000f1, 3628488fbc64ebf9}
 

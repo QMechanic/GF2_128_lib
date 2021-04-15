@@ -52,9 +52,9 @@ inline u32 get_degree_256(v256 px)
 		return 63-__builtin_clzll(px.u64[0]|1);
 }
 
-
+// karatsuba algorithm
 // a*b, 128bit input, 256 bit output
-inline v256 gf2x_karatsuba(v128 a, v128 b)
+inline v256 gf2x_mul(v128 a, v128 b)
 {
 	v128 z0, z1, z2, t1, t2;
 	z0.mm = _mm_clmulepi64_si128(a.mm, b.mm, 0x00);
@@ -156,12 +156,12 @@ inline v128 gf2x_reduce(v256 in, const v128 INV, const v128 P, const u32 p_deg)
 	v256 t = shr_v256(in, p_deg); // Shift right, needs to be super fast here
 
 	v128 out = {(long long)t.u64[0], (long long)t.u64[1]};
-	t = gf2x_karatsuba(out, INV);
+	t = gf2x_mul(out, INV);
 	t = shr_v256(t, p_deg); // Shift right, needs to be super fast here
 
 	out.u64[0] = t.u64[0];
 	out.u64[1] = t.u64[1];
-	t = gf2x_karatsuba(out, P);
+	t = gf2x_mul(out, P);
 	t.u64 ^= in.u64;
 
 	out.u64[0] = t.u64[0];
@@ -179,7 +179,7 @@ inline v128 gf2x_exp(v128 base, v128 n, const v128 INV, const v128 P, const u32 
 	while ((n.u64[1] != 0) || (n.u64[0] != 0))
 	{
 		if (n.u64[i / 64] & 1)
-			out = gf2x_reduce(gf2x_karatsuba(out, t), INV, P, p_deg);
+			out = gf2x_reduce(gf2x_mul(out, t), INV, P, p_deg);
 		t = gf2x_reduce(gf2x_square(t), INV, P, p_deg);
 		n.u64[i / 64] >>= 1;
 		i++;
