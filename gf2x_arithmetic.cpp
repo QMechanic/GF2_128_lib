@@ -31,6 +31,7 @@ void print_v256(v256 a) {
 	printf("{%016lx, %016lx, %016lx, %016lx}\n", a.u64[3], a.u64[2], a.u64[1], a.u64[0]); // print in big endian
 }
 
+// Stolen from klondike: https://github.com/grocid/weight-4-polynomial-finder/blob/master/polyfinder/gf2_monomial.cpp#L12
 inline u32 get_degree(v128 px)
 {
 	if (px.u64[1] != 0)
